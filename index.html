@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IEA CoAct Central Resource Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFAF7;
+    --surface:#FFFFFF;
+    --ink:#26262B;
+    --ink-soft:#6E6E76;
+    --border:#E7E4DC;
+    --border-strong:#D6D2C7;
+    --teal:#218F87;
+    --magenta:#8E3480;
+    --gold:#C98A1E;
+    --orange:#D9502B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+  }
+  h1,h2,.brand-word,.pill,.badge,.quick-chip,.copy-btn,.startover{
+    font-family:'Poppins', sans-serif;
+  }
+  .wave-banner{
+    width:100%;
+    height:30px;
+    display:block;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:0 20px 70px;}
+
+  .hero{padding:16px 0 2px;}
+  .brandrow{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .brand-word{font-size:14px; font-weight:600; color:var(--ink-soft);}
+  .iea-badge{
+    font-size:12px;
+    font-weight:600;
+    color:#fff;
+    background:var(--magenta);
+    padding:4px 10px;
+    border-radius:20px;
+  }
+  h1{font-size:23px; font-weight:700; margin:0 0 5px; letter-spacing:-0.01em;}
+  .hero p{color:var(--ink-soft); font-size:14px; margin:0; max-width:58ch;}
+  .hero p strong{color:var(--ink); font-weight:600;}
+
+  section{margin:14px 0;}
+  .section-label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 8px;
+  }
+
+  .quick-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .quick-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--ink);
+    font-size:13px;
+    font-weight:500;
+    padding:8px 14px 8px 10px;
+    border-radius:24px;
+    cursor:pointer;
+    transition:border-color .12s ease, box-shadow .12s ease;
+  }
+  .quick-chip:hover{border-color:var(--border-strong); box-shadow:0 1px 4px rgba(0,0,0,.05);}
+  .quick-chip:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .quick-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+
+  .phase-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .phase-btn{
+    font-size:13.5px;
+    font-weight:600;
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:24px;
+    cursor:pointer;
+    opacity:.55;
+    transition:opacity .12s ease, transform .08s ease;
+  }
+  .phase-btn:hover{opacity:.85;}
+  .phase-btn[data-active="true"]{opacity:1;}
+  .phase-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .phase-btn[data-phase="Connect"]{background:var(--teal);}
+  .phase-btn[data-phase="Grow"]{background:var(--magenta);}
+  .phase-btn[data-phase="Prepare"]{background:var(--gold);}
+  .phase-btn[data-phase="Support"]{background:var(--orange);}
+
+  .search-input{
+    width:100%;
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    padding:13px 16px;
+    border:1.5px solid var(--border-strong);
+    border-radius:10px;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .search-input:focus-visible{outline:2px solid var(--ink); outline-offset:1px;}
+
+  .prompt-card{
+    border:1.5px dashed var(--border-strong);
+    border-radius:14px;
+    padding:36px 24px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:14px;
+  }
+  .prompt-card svg{margin-bottom:10px; opacity:.55;}
+
+  .refine-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .refine-selects{display:flex; flex-wrap:wrap; gap:8px;}
+  select{
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--border-strong);
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .startover{
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:none;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:8px 16px;
+    cursor:pointer;
+  }
+  .startover:hover{border-color:var(--border-strong); color:var(--ink);}
+
+  .count-row{font-size:13px; color:var(--ink-soft); margin-bottom:12px;}
+
+  .results{display:flex; flex-direction:column; gap:10px;}
+  .row{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+  }
+  .row-main{min-width:0; flex:1;}
+  .badge{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.03em;
+    color:#fff;
+    padding:3px 9px;
+    border-radius:6px;
+    margin-bottom:9px;
+  }
+  .badge[data-phase="Connect"]{background:var(--teal);}
+  .badge[data-phase="Grow"]{background:var(--magenta);}
+  .badge[data-phase="Prepare"]{background:var(--gold);}
+  .badge[data-phase="Support"]{background:var(--orange);}
+
+  .theme-label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .resource-tag{
+    display:inline-block;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6px 10px;
+    margin-bottom:9px;
+    word-break:break-word;
+  }
+  .meta-tags{display:flex; flex-wrap:wrap; gap:6px;}
+  .meta-tag{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:3px 8px;
+  }
+
+  .copy-btn{
+    flex-shrink:0;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:20px;
+    border:1.5px solid var(--border-strong);
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+    min-width:80px;
+  }
+  .copy-btn:hover{border-color:var(--ink);}
+  .copy-btn[data-copied="true"]{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+
+  footer{
+    background:var(--orange);
+    color:#fff;
+    padding:22px 20px;
+    border-radius:16px 16px 0 0;
+    margin-top:40px;
+  }
+  .footer-inner{
+    max-width:840px;
+    margin:0 auto;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .footer-inner .get-in-touch{font-weight:700; font-size:15px; font-family:'Poppins',sans-serif;}
+  .footer-inner .contact{font-size:14px; font-weight:500;}
+  .footer-note{
+    max-width:840px;
+    margin:14px auto 0;
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:0 20px;
+  }
+
+  @media (max-width:600px){
+    .row{flex-direction:column;}
+    .copy-btn{width:100%;}
+    .refine-row{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<svg class="wave-banner" viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,40 C280,90 480,0 760,30 C1040,60 1200,10 1440,45 L1440,0 L0,0 Z" fill="#D9502B"></path>
+  <path d="M0,55 C280,20 520,85 800,50 C1080,15 1240,70 1440,40 L1440,90 L0,90 Z" fill="#C98A1E" opacity="0.5"></path>
+</svg>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="brandrow">
+      <svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="7" fill="#218F87"/>
+        <circle cx="23" cy="11" r="7" fill="#D9502B"/>
+        <circle cx="11" cy="23" r="7" fill="#C98A1E"/>
+        <circle cx="23" cy="23" r="7" fill="#8E3480"/>
+      </svg>
+      <span class="brand-word">CoAct Connect</span>
+      <span class="iea-badge">Inclusive Employment Australia</span>
+    </div>
+    <h1>IEA CoAct Central Resource Finder</h1>
+    <p>Pick a task, a phase, or start typing. Once you've found what you need, <strong>copy the resource name</strong> and paste it into CoAct Central's search bar.</p>
+  </div>
+
+  <section id="quickfindWrap">
+    <p class="section-label">What are you trying to do?</p>
+    <div class="quick-grid" id="quickfind"></div>
+  </section>
+
+  <section>
+    <p class="section-label">Or jump straight to a phase</p>
+    <div class="phase-row" id="phaseRow"></div>
+  </section>
+
+  <section>
+    <p class="section-label">Or search directly</p>
+    <input type="text" class="search-input" id="search" placeholder="Search by resource name, theme or system…" autocomplete="off">
+  </section>
+
+  <section id="outputArea"></section>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="get-in-touch">Get in touch</span>
+    <span class="contact">1800 226 228 &nbsp; · &nbsp; coact.org.au</span>
+  </div>
+</footer>
+<p class="footer-note">Built from the IEA CoAct Central Resource Map. If a resource has moved or been renamed in CoAct Central, this list won't reflect it.</p>
+
+<script>
+const PHASE_COLORS = {Connect:'#218F87', Grow:'#8E3480', Prepare:'#C98A1E', Support:'#D9502B'};
+
+const DATA = [
+  {phase:"Connect", theme:"Appointment Management", resource:"Appointment Task Card - CCA", system:"General", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Client Information", resource:"Client Profile in Campus Video", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Client Records", resource:"Create a Prospect Record (JobReady)", system:"JobReady", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Client Records", resource:"Managing Prospect Clients", system:"JobReady", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Client Records", resource:"How to Merge Job Seeker Records", system:"JobReady", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Commencement Preparation", resource:"What to Review in WAOP Before the Initial Appt", system:"WAOP", role:"ESC / MS EDC"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"IEA Eligibility - What to Check", system:"General", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"Complete a Direct Registration", system:"Campus / JobReady / WAOP", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"Managing Direct Queries", system:"General", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Initial Appointment", resource:"Conducting the Initial Appointment", system:"General", role:"ESC / MS EDC"},
+  {phase:"Connect", theme:"Initial Appointment", resource:"Initial Interview", system:"General", role:"ESC / MS EDC"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Dynamic Campus Intake Form", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - View, Edit and Reissue Video", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - Walkthrough Video", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"How to Send the Welcome Pack", system:"JobReady", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"Sending a Campus Invitation to a Client - Video", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"Welcome to Campus - Video", system:"Campus", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Workshop", resource:"Navigating Services Online", system:"General", role:"CCA / MS ESO"},
+
+  {phase:"Grow", theme:"Activity & Intervention Management", resource:"Create a Community Connection Record", system:"JobReady", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Appointment Management", resource:"Appointment Task Card - ESC", system:"General", role:"ESC"},
+  {phase:"Grow", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Initial Needs and Vocational Assessment", system:"JobReady", role:"MS EDC"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment", system:"Campus", role:"ESC"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment Walkthrough - Video", system:"Campus", role:"ESC"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Identifying If a Client Requires an Updated ESAt", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Work Personality Assessment", system:"Campus", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families"},
+  {phase:"Grow", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families"},
+  {phase:"Grow", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Operational Support", resource:"Work Instructions – Job Ready Alerts Dashboard", system:"JobReady", role:"All Role Families"},
+  {phase:"Grow", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families"},
+  {phase:"Grow", theme:"Workshop", resource:"Financial Fitness Workshop", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Workshop", resource:"Interview Preparation Workshop", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Workshop", resource:"It's Not a Catastrophe Workshop", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Workshop", resource:"Making Friends with Anxiety", system:"General", role:"ESC / MS EDC"},
+
+  {phase:"Prepare", theme:"Appointment Management", resource:"Appointment Task Card - DRS", system:"General", role:"DRS"},
+  {phase:"Prepare", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Adding and Managing an Employer Profile in JobReady", system:"JobReady", role:"DRS / MS EDC"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Engagement – Educating Employers on Disability", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Pack", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Employment Tools", resource:"IEA Employment Placement Tools", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"Cover Letter Workshop", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Upload a Resume", system:"JobReady", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"How Clients Upload a Resume to Workforce Australia", system:"WAOP", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Creating a Cover Letter in Campus", system:"Campus", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Job Match Attributes", system:"JobReady", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Using Job Match Attributes in JobReady", system:"JobReady", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Marketing Vacancies", system:"General", role:"DRS / MS EDC"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Job Ready – Shortlisting a Vacancy", system:"JobReady", role:"DRS / MS EDC"},
+  {phase:"Prepare", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"Resume Writing Workshop", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"Industry Specific Workshops", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"Job Club Workshops", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"My Labour Market Workshop", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Workshop", resource:"DEI Workshop", system:"General", role:"ESC / DRS / MS EDC"},
+
+  {phase:"Support", theme:"Appointment Management", resource:"Appointment Task Card - WRC", system:"General", role:"WRC"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment", system:"Campus", role:"WRC"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment - Video", system:"Campus", role:"WRC"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Clinical Needs Assessment", system:"JobReady", role:"MS ESC"},
+  {phase:"Support", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families"},
+  {phase:"Support", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Submitting a Flexible Ongoing Support Claim to CCU", system:"JobReady", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Funding Support", resource:"Supports Available through Employment Assistance Fund (EAF)", system:"General", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families"},
+  {phase:"Support", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Support Management", resource:"Job Ready – Support Tracker and Support Schedule", system:"JobReady", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Support Management", resource:"Work Instruction – Job Ready Alerts Dashboard", system:"JobReady", role:"WRC / MS ESC"},
+];
+
+const QUICKFIND = [
+  {label:"Register or onboard a client", phase:"Connect"},
+  {label:"Complete intake or initial appointment prep", phase:"Connect"},
+  {label:"Assess needs, build a plan or manage barriers", phase:"Grow"},
+  {label:"Create or review the Career Action Plan", phase:"Grow"},
+  {label:"Prepare applications, match jobs or engage employers", phase:"Prepare"},
+  {label:"Progress placement evidence or claims", phase:"Prepare"},
+  {label:"Manage in-work and ongoing support", phase:"Support"},
+  {label:"Manage EAF, refunds or phase changes", phase:"Support"},
+];
+
+const state = {phase:null, system:"All", role:"All", query:""};
+
+function splitTokens(str){ return str.split('/').map(s=>s.trim()); }
+function uniqueSorted(list){ return Array.from(new Set(list)).sort(); }
+function hasSelection(){ return state.phase !== null || state.query.trim() !== ""; }
+
+function buildQuickFind(){
+  const el = document.getElementById('quickfind');
+  el.innerHTML = QUICKFIND.map((q,i)=>
+    `<button class="quick-chip" data-idx="${i}"><span class="quick-dot" style="background:${PHASE_COLORS[q.phase]}"></span>${q.label}</button>`
+  ).join('');
+  el.querySelectorAll('.quick-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const q = QUICKFIND[btn.dataset.idx];
+      state.phase = q.phase;
+      state.system = "All";
+      state.role = "All";
+      state.query = "";
+      document.getElementById('search').value = "";
+      renderPhaseRow();
+      renderOutput();
+    });
+  });
+}
+
+function renderPhaseRow(){
+  const phases = ["Connect","Grow","Prepare","Support"];
+  const el = document.getElementById('phaseRow');
+  el.innerHTML = phases.map(p=>
+    `<button class="phase-btn" data-phase="${p}" data-active="${state.phase===p}">${p}</button>`
+  ).join('');
+  el.querySelectorAll('.phase-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.phase = (state.phase === btn.dataset.phase) ? null : btn.dataset.phase;
+      renderPhaseRow();
+      renderOutput();
+    });
+  });
+}
+
+function matches(row){
+  if(state.phase !== null && row.phase !== state.phase) return false;
+  if(state.system !== "All" && !splitTokens(row.system).includes(state.system)) return false;
+  if(state.role !== "All"){
+    const roles = splitTokens(row.role);
+    if(!roles.includes(state.role) && row.role !== "All Role Families") return false;
+  }
+  if(state.query){
+    const hay = (row.theme+' '+row.resource+' '+row.system+' '+row.role+' '+row.phase).toLowerCase();
+    if(!hay.includes(state.query.toLowerCase())) return false;
+  }
+  return true;
+}
+
+async function copyText(text, btn){
+  let ok = false;
+  try{ await navigator.clipboard.writeText(text); ok = true; }
+  catch(e){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      ok = true;
+    }catch(e2){ ok = false; }
+  }
+  if(ok){
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.dataset.copied = "true";
+    setTimeout(()=>{ btn.textContent = original; btn.dataset.copied = "false"; }, 1200);
+  }
+}
+
+function renderOutput(){
+  const quickfindWrap = document.getElementById('quickfindWrap');
+
+  if(hasSelection()){
+    quickfindWrap.style.display = 'none';
+  }else{
+    quickfindWrap.style.display = '';
+  }
+
+  const area = document.getElementById('outputArea');
+
+  if(!hasSelection()){
+    area.innerHTML = `
+      <div class="prompt-card">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10.5" cy="10.5" r="6.5" stroke="#6E6E76" stroke-width="1.6"/>
+          <line x1="15.3" y1="15.3" x2="21" y2="21" stroke="#6E6E76" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div>Pick a task, choose a phase, or start typing above to see matching resources.</div>
+      </div>`;
+    return;
+  }
+
+  const systems = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.system)));
+  const roles = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.role)));
+  const filtered = DATA.filter(matches);
+
+  area.innerHTML = `
+    <div class="refine-row">
+      <div class="refine-selects">
+        <select id="systemFilter">
+          <option value="All">All systems</option>
+          ${systems.map(s=>`<option value="${s}" ${state.system===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <select id="roleFilter">
+          <option value="All">All roles</option>
+          ${roles.map(r=>`<option value="${r}" ${state.role===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+      </div>
+      <button class="startover" id="startOver">Start over</button>
+    </div>
+    <div class="count-row">${filtered.length} resource${filtered.length===1?'':'s'} found</div>
+    <div class="results">
+      ${filtered.length===0 ? `<div class="prompt-card">No matches. Try clearing a filter or the search box.</div>` :
+        filtered.map(r=>`
+          <div class="row">
+            <div class="row-main">
+              <span class="badge" data-phase="${r.phase}">${r.phase.toUpperCase()}</span><br>
+              <span class="theme-label">${r.theme}</span>
+              <span class="resource-tag">${r.resource}</span>
+              <div class="meta-tags">
+                <span class="meta-tag"><strong>SYSTEM:</strong> ${r.system}</span>
+                <span class="meta-tag"><strong>PRIMARY ROLE:</strong> ${r.role}</span>
+              </div>
+            </div>
+            <button class="copy-btn" data-resource="${r.resource.replace(/"/g,'&quot;')}">Copy</button>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+
+  document.getElementById('systemFilter').addEventListener('change', e=>{ state.system = e.target.value; renderOutput(); });
+  document.getElementById('roleFilter').addEventListener('change', e=>{ state.role = e.target.value; renderOutput(); });
+  document.getElementById('startOver').addEventListener('click', ()=>{
+    state.phase = null; state.system = "All"; state.role = "All"; state.query = "";
+    document.getElementById('search').value = "";
+    renderPhaseRow();
+    renderOutput();
+  });
+  area.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> copyText(btn.dataset.resource, btn));
+  });
+}
+
+document.getElementById('search').addEventListener('input', e=>{
+  state.query = e.target.value;
+  renderOutput();
+});
+
+buildQuickFind();
+renderPhaseRow();
+renderOutput();
+</script>
+</body>
+</html>
