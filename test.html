@@ -220,7 +220,11 @@
     text-align:center;
     white-space:nowrap;
   }
+  .open-btn{display:inline-flex; align-items:center; justify-content:center; gap:6px;}
   .open-btn:hover{background:#1a766f; border-color:#1a766f;}
+  .resource-link{text-decoration:none; cursor:pointer;}
+  .resource-link:hover{color:var(--teal); border-color:var(--teal); text-decoration:underline;}
+  .resource-link:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
   .open-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
   .note{
     font-size:13.5px;
@@ -469,14 +473,14 @@ function renderOutput(){
             <div class="row-main">
               <span class="badge" data-phase="${r.phase}">${r.phase.toUpperCase()}</span><br>
               <span class="theme-label">${r.theme}</span>
-              <span class="resource-tag">${r.resource}</span>
+              ${r.url ? `<a class="resource-tag resource-link" href="${r.url}" target="_blank" rel="noopener">${r.resource}</a>` : `<span class="resource-tag">${r.resource}</span>`}
               ${r.note ? `<div class="note"><strong>How to find it:</strong> ${r.note}</div>` : ''}
               <div class="meta-tags">
                 <span class="meta-tag"><strong>SYSTEM:</strong> ${r.system}</span>
                 <span class="meta-tag"><strong>PRIMARY ROLE:</strong> ${r.role}</span>
               </div>
             </div>
-            ${r.url ? `<div class="row-actions"><a class="open-btn" href="${r.url}" target="_blank" rel="noopener">Open in CoAct Central</a></div>` : ''}
+            ${r.url ? `<div class="row-actions"><a class="open-btn" href="${r.url}" target="_blank" rel="noopener">Open resource<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>` : ''}
           </div>
         `).join('')
       }
