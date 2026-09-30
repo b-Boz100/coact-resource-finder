@@ -149,6 +149,8 @@
   .startover:hover{border-color:var(--border-strong); color:var(--ink);}
 
   .count-row{font-size:13px; color:var(--ink-soft); margin-bottom:12px;}
+  .task-row{font-size:14px; color:var(--ink); margin-bottom:4px;}
+  .task-row strong{font-weight:600;}
 
   .results{display:flex; flex-direction:column; gap:10px;}
   .row{
@@ -360,21 +362,43 @@ const DATA = [
 ];
 
 const QUICKFIND = [
-  {label:"Register or onboard a client", phase:"Connect"},
-  {label:"Complete intake or initial appointment prep", phase:"Connect"},
-  {label:"Assess needs, build a plan or manage barriers", phase:"Grow"},
-  {label:"Create or review the Career Action Plan", phase:"Grow"},
-  {label:"Prepare applications, match jobs or engage employers", phase:"Prepare"},
-  {label:"Progress placement evidence or claims", phase:"Prepare"},
-  {label:"Manage in-work and ongoing support", phase:"Support"},
-  {label:"Manage EAF, refunds or phase changes", phase:"Support"},
+  {label:"Register or onboard a client", phase:"Connect", phases:["Connect"], themes:["Eligibility & Registration","Client Records","Welcome & Activation"]},
+  {label:"Complete intake or initial appointment prep", phase:"Connect", phases:["Connect"], themes:["Intake & Onboarding","Commencement Preparation","Initial Appointment","Appointment Management"]},
+  {label:"Assess needs, build a plan or manage barriers", phase:"Grow", themes:["Assessment & Planning","Activity & Intervention Management"]},
+  {label:"Create or review the Career Action Plan", phase:"Grow", themes:["Career Planning"]},
+  {label:"Prepare applications, match jobs or engage employers", phase:"Prepare", phases:["Prepare"], themes:["Job Readiness","Employer Engagement","Employment Tools"]},
+  {label:"Progress placement evidence or claims", phase:"Prepare", themes:["Claims & Evidence","Placement Management"]},
+  {label:"Manage in-work and ongoing support", phase:"Support", themes:["Support Management","Progress Monitoring"]},
+  {label:"Access Employment Assistance Fund (EAF) support", phase:"Support", themes:["Funding Support"]},
 ];
 
-const state = {phase:null, system:"All", role:"All", query:""};
+const state = {phase:null, quick:null, system:"All", role:"All", query:""};
 
 function splitTokens(str){ return str.split('/').map(s=>s.trim()); }
 function uniqueSorted(list){ return Array.from(new Set(list)).sort(); }
-function hasSelection(){ return state.phase !== null || state.query.trim() !== ""; }
+function hasSelection(){ return state.phase !== null || state.quick !== null || state.query.trim() !== ""; }
+
+function inQuick(row, q){
+  if(q.phases && !q.phases.includes(row.phase)) return false;
+  return q.themes.includes(row.theme);
+}
+
+// Resources that appear in several phases are shown once, with every phase badge and role combined.
+function mergeByResource(rows){
+  const byName = new Map();
+  rows.forEach(r=>{
+    const m = byName.get(r.resource);
+    if(!m){ byName.set(r.resource, {...r, phases:[r.phase], roleTokens:splitTokens(r.role)}); return; }
+    if(!m.phases.includes(r.phase)) m.phases.push(r.phase);
+    splitTokens(r.role).forEach(t=>{ if(!m.roleTokens.includes(t)) m.roleTokens.push(t); });
+  });
+  return Array.from(byName.values()).map(m=>({...m, role:m.roleTokens.join(' / ')}));
+}
+
+function pool(){
+  if(state.quick !== null) return mergeByResource(DATA.filter(r=>inQuick(r, QUICKFIND[state.quick])));
+  return DATA.map(r=>({...r, phases:[r.phase]}));
+}
 
 function buildQuickFind(){
   const el = document.getElementById('quickfind');
@@ -383,8 +407,8 @@ function buildQuickFind(){
   ).join('');
   el.querySelectorAll('.quick-chip').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const q = QUICKFIND[btn.dataset.idx];
-      state.phase = q.phase;
+      state.quick = Number(btn.dataset.idx);
+      state.phase = null;
       state.system = "All";
       state.role = "All";
       state.query = "";
@@ -404,6 +428,7 @@ function renderPhaseRow(){
   el.querySelectorAll('.phase-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.phase = (state.phase === btn.dataset.phase) ? null : btn.dataset.phase;
+      state.quick = null;
       renderPhaseRow();
       renderOutput();
     });
@@ -411,14 +436,14 @@ function renderPhaseRow(){
 }
 
 function matches(row){
-  if(state.phase !== null && row.phase !== state.phase) return false;
+  if(state.phase !== null && !row.phases.includes(state.phase)) return false;
   if(state.system !== "All" && !splitTokens(row.system).includes(state.system)) return false;
   if(state.role !== "All"){
     const roles = splitTokens(row.role);
     if(!roles.includes(state.role) && row.role !== "All Role Families") return false;
   }
   if(state.query){
-    const hay = (row.theme+' '+row.resource+' '+row.system+' '+row.role+' '+row.phase).toLowerCase();
+    const hay = (row.theme+' '+row.resource+' '+row.system+' '+row.role+' '+row.phases.join(' ')).toLowerCase();
     if(!hay.includes(state.query.toLowerCase())) return false;
   }
   return true;
@@ -447,9 +472,11 @@ function renderOutput(){
     return;
   }
 
-  const systems = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.system)));
-  const roles = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.role)));
-  const filtered = DATA.filter(matches);
+  const rows = pool();
+  const scope = rows.filter(r=>state.phase===null || r.phases.includes(state.phase));
+  const systems = uniqueSorted(scope.flatMap(r=>splitTokens(r.system)));
+  const roles = uniqueSorted(scope.flatMap(r=>splitTokens(r.role)));
+  const filtered = rows.filter(matches);
 
   area.innerHTML = `
     <div class="refine-row">
@@ -465,13 +492,14 @@ function renderOutput(){
       </div>
       <button class="startover" id="startOver">Start over</button>
     </div>
+    ${state.quick!==null ? `<div class="task-row">Showing resources for: <strong>${QUICKFIND[state.quick].label}</strong></div>` : ''}
     <div class="count-row">${filtered.length} resource${filtered.length===1?'':'s'} found</div>
     <div class="results">
       ${filtered.length===0 ? `<div class="prompt-card">No matches. Try clearing a filter or the search box.</div>` :
         filtered.map(r=>`
           <div class="row">
             <div class="row-main">
-              <span class="badge" data-phase="${r.phase}">${r.phase.toUpperCase()}</span><br>
+              ${r.phases.map(p=>`<span class="badge" data-phase="${p}">${p.toUpperCase()}</span>`).join(' ')}<br>
               <span class="theme-label">${r.theme}</span>
               ${r.url ? `<a class="resource-tag resource-link" href="${r.url}" target="_blank" rel="noopener">${r.resource}</a>` : `<span class="resource-tag">${r.resource}</span>`}
               ${r.note ? `<div class="note"><strong>How to find it:</strong> ${r.note}</div>` : ''}
@@ -490,7 +518,7 @@ function renderOutput(){
   document.getElementById('systemFilter').addEventListener('change', e=>{ state.system = e.target.value; renderOutput(); });
   document.getElementById('roleFilter').addEventListener('change', e=>{ state.role = e.target.value; renderOutput(); });
   document.getElementById('startOver').addEventListener('click', ()=>{
-    state.phase = null; state.system = "All"; state.role = "All"; state.query = "";
+    state.phase = null; state.quick = null; state.system = "All"; state.role = "All"; state.query = "";
     document.getElementById('search').value = "";
     renderPhaseRow();
     renderOutput();
