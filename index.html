@@ -28,7 +28,7 @@
     font-family:'Inter', sans-serif;
     line-height:1.55;
   }
-  h1,h2,.brand-word,.pill,.badge,.quick-chip,.copy-btn,.startover{
+  h1,h2,.brand-word,.pill,.badge,.quick-chip,.startover{
     font-family:'Poppins', sans-serif;
   }
   .wrap{max-width:880px; margin:0 auto; padding:0 20px 70px;}
@@ -149,6 +149,8 @@
   .startover:hover{border-color:var(--border-strong); color:var(--ink);}
 
   .count-row{font-size:13px; color:var(--ink-soft); margin-bottom:12px;}
+  .task-row{font-size:14px; color:var(--ink); margin-bottom:4px;}
+  .task-row strong{font-weight:600;}
 
   .results{display:flex; flex-direction:column; gap:10px;}
   .row{
@@ -206,29 +208,41 @@
     padding:3px 8px;
   }
 
-  .copy-btn{
-    flex-shrink:0;
+  .row-actions{display:flex; flex-direction:column; gap:8px; flex-shrink:0;}
+  .open-btn{
+    font-family:'Poppins', sans-serif;
     font-size:13px;
     font-weight:600;
     padding:9px 16px;
     border-radius:20px;
-    border:1.5px solid var(--border-strong);
-    background:var(--surface);
-    color:var(--ink);
-    cursor:pointer;
-    min-width:80px;
-  }
-  .copy-btn:hover{border-color:var(--ink);}
-  .copy-btn[data-copied="true"]{
-    background:var(--ink);
+    border:1.5px solid var(--teal);
+    background:var(--teal);
     color:#fff;
-    border-color:var(--ink);
+    text-decoration:none;
+    text-align:center;
+    white-space:nowrap;
   }
+  .open-btn{display:inline-flex; align-items:center; justify-content:center; gap:6px;}
+  .open-btn:hover{background:#1a766f; border-color:#1a766f;}
+  .resource-link{text-decoration:none; cursor:pointer;}
+  .resource-link:hover{color:var(--teal); border-color:var(--teal); text-decoration:underline;}
+  .resource-link:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .open-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .note{
+    font-size:13.5px;
+    color:var(--ink);
+    background:#FBF6EC;
+    border-left:3px solid var(--gold);
+    border-radius:6px;
+    padding:8px 12px;
+    margin:0 0 9px;
+  }
+  .note strong{font-weight:600;}
 
 
   @media (max-width:600px){
     .row{flex-direction:column;}
-    .copy-btn{width:100%;}
+    .row-actions{width:100%;}
     .refine-row{flex-direction:column; align-items:flex-start;}
   }
 </style>
@@ -242,7 +256,7 @@
       <span class="brand-word">CoAct Connect: Inclusive Employment Australia</span>
     </div>
     <h1>IEA CoAct Central Resource Finder</h1>
-    <p>Pick a task, a phase, or start typing. Once you've found what you need, <strong>copy the resource name</strong> and paste it into CoAct Central's search bar.</p>
+    <p>Pick a task, a phase, or start typing. Once you've found what you need, <strong>open it in CoAct Central</strong> with one click.</p>
   </div>
 
   <section id="quickfindWrap">
@@ -268,101 +282,123 @@
 const PHASE_COLORS = {Connect:'#218F87', Grow:'#8E3480', Prepare:'#C98A1E', Support:'#D9502B'};
 
 const DATA = [
-  {phase:"Connect", theme:"Appointment Management", resource:"Appointment Task Card - CCA", system:"General", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Client Information", resource:"Client Profile in Campus Video", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Client Records", resource:"Create a Prospect Record (JobReady)", system:"JobReady", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Client Records", resource:"Managing Prospect Clients", system:"JobReady", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Client Records", resource:"How to Merge Job Seeker Records", system:"JobReady", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Commencement Preparation", resource:"What to Review in WAOP Before the Initial Appt", system:"WAOP", role:"ESC / MS EDC"},
-  {phase:"Connect", theme:"Eligibility & Registration", resource:"IEA Eligibility - What to Check", system:"General", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Eligibility & Registration", resource:"Complete a Direct Registration", system:"Campus / JobReady / WAOP", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Eligibility & Registration", resource:"Managing Direct Queries", system:"General", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Initial Appointment", resource:"Conducting the Initial Appointment", system:"General", role:"ESC / MS EDC"},
-  {phase:"Connect", theme:"Initial Appointment", resource:"Initial Interview", system:"General", role:"ESC / MS EDC"},
-  {phase:"Connect", theme:"Intake & Onboarding", resource:"Dynamic Campus Intake Form", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - View, Edit and Reissue Video", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - Walkthrough Video", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Welcome & Activation", resource:"How to Send the Welcome Pack", system:"JobReady", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Welcome & Activation", resource:"Sending a Campus Invitation to a Client - Video", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Welcome & Activation", resource:"Welcome to Campus - Video", system:"Campus", role:"CCA / MS ESO"},
-  {phase:"Connect", theme:"Workshop", resource:"Navigating Services Online", system:"General", role:"CCA / MS ESO"},
+  {phase:"Connect", theme:"Appointment Management", resource:"Appointment Task Card - CCA", system:"General", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/appointment-task-cards-cca"},
+  {phase:"Connect", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"CCA / MS ESO", url:"https://central.coact.org.au/all-bestpracticeguides/interpreter-services"},
+  {phase:"Connect", theme:"Client Information", resource:"Client Profile in Campus Video", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/client-profile-in-campus"},
+  {phase:"Connect", theme:"Client Records", resource:"Create a Prospect Record (JobReady)", system:"JobReady", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-all/create-client-prospect-record"},
+  {phase:"Connect", theme:"Client Records", resource:"Managing Prospect Clients", system:"JobReady", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-all/managing-prospect-clients"},
+  {phase:"Connect", theme:"Client Records", resource:"How to Merge Job Seeker Records", system:"JobReady", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-all/how-to-merge-job-seeker-records"},
+  {phase:"Connect", theme:"Commencement Preparation", resource:"What to Review in WAOP Before the Initial Appt", system:"WAOP", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-iea/what-to-review-in-waop-before-the-initial-appointment"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"IEA Eligibility - What to Check", system:"General", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/iea-eligibility-what-to-check"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"Complete a Direct Registration", system:"Campus / JobReady / WAOP", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/direct-registration"},
+  {phase:"Connect", theme:"Eligibility & Registration", resource:"Managing Direct Queries", system:"General", role:"CCA / MS ESO", url:"https://central.coact.org.au/procedures-iea/managing-direct-queries"},
+  {phase:"Connect", theme:"Initial Appointment", resource:"Conducting the Initial Appointment", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-all/conducting-the-initial-appointment"},
+  {phase:"Connect", theme:"Initial Appointment", resource:"Initial Interview", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/procedures-iea/initial-interview"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Dynamic Campus Intake Form", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/dynamic-campus-intake-form"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - View, Edit and Reissue Video", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/intake-form-view-edit-and-reissuemp4"},
+  {phase:"Connect", theme:"Intake & Onboarding", resource:"Intake Form - Walkthrough Video", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/intake-form-walkthroughmp4"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"How to Send the Welcome Pack", system:"JobReady", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-iea/how-to-send-the-welcome-pack"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"Sending a Campus Invitation to a Client - Video", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-all/sending-a-campus-invitation-to-a-client"},
+  {phase:"Connect", theme:"Welcome & Activation", resource:"Welcome to Campus - Video", system:"Campus", role:"CCA / MS ESO", url:"https://central.coact.org.au/documents-all/welcome-to-campus"},
+  {phase:"Connect", theme:"Workshop", resource:"Navigating Services Online", system:"General", role:"CCA / MS ESO", url:"https://central.coact.org.au/all_workshops/navigating-services-online-workshops"},
 
-  {phase:"Grow", theme:"Activity & Intervention Management", resource:"Create a Community Connection Record", system:"JobReady", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Appointment Management", resource:"Appointment Task Card - ESC", system:"General", role:"ESC"},
-  {phase:"Grow", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Assessment & Planning", resource:"Initial Needs and Vocational Assessment", system:"JobReady", role:"MS EDC"},
-  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment", system:"Campus", role:"ESC"},
-  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment Walkthrough - Video", system:"Campus", role:"ESC"},
-  {phase:"Grow", theme:"Assessment & Planning", resource:"Identifying If a Client Requires an Updated ESAt", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Assessment & Planning", resource:"Work Personality Assessment", system:"Campus", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families"},
-  {phase:"Grow", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families"},
-  {phase:"Grow", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Operational Support", resource:"Work Instructions – Job Ready Alerts Dashboard", system:"JobReady", role:"All Role Families"},
-  {phase:"Grow", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families"},
-  {phase:"Grow", theme:"Workshop", resource:"Financial Fitness Workshop", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Workshop", resource:"Interview Preparation Workshop", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Workshop", resource:"It's Not a Catastrophe Workshop", system:"General", role:"ESC / MS EDC"},
-  {phase:"Grow", theme:"Workshop", resource:"Making Friends with Anxiety", system:"General", role:"ESC / MS EDC"},
+  {phase:"Grow", theme:"Activity & Intervention Management", resource:"Create a Community Connection Record", system:"JobReady", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-all/create-a-community-connection-record"},
+  {phase:"Grow", theme:"Appointment Management", resource:"Appointment Task Card - ESC", system:"General", role:"ESC", url:"https://central.coact.org.au/documents-iea/appointment-task-card-esc"},
+  {phase:"Grow", theme:"Appointment Management", resource:"Interpreter Services", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/interpreter-services"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Initial Needs and Vocational Assessment", system:"JobReady", role:"MS EDC", url:"https://central.coact.org.au/documents-iea/initial-needs-and-vocational-assessment"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment", system:"Campus", role:"ESC", url:"https://central.coact.org.au/documents-iea/opus-assessment"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"OPUS Assessment Walkthrough - Video", system:"Campus", role:"ESC", url:"https://central.coact.org.au/documents-iea/opus-assessment-walkthroughmp4"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Identifying If a Client Requires an Updated ESAt", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-iea/identifying-if-a-client-requires-an-updated-esat"},
+  {phase:"Grow", theme:"Assessment & Planning", resource:"Work Personality Assessment", system:"Campus", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-iea/work-personality-assessment"},
+  {phase:"Grow", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/campus-career-action-plan"},
+  {phase:"Grow", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/managing-the-career-action-plan-in-campusmp4"},
+  {phase:"Grow", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-iea/checklist-for-ensuring-evidence-is-ready-for-submission-to-ccu"},
+  {phase:"Grow", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / MS EDC", url:"https://central.coact.org.au/documents-iea/job-ready-upload-claims-evidence-and-submit-to-ccu"},
+  {phase:"Grow", theme:"Operational Support", resource:"Work Instructions – Job Ready Alerts Dashboard", system:"JobReady", role:"All Role Families", url:"https://central.coact.org.au/documents-all/work-instructions-job-ready-alerts-dashboard"},
+  {phase:"Grow", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/client-dashboard"},
+  {phase:"Grow", theme:"Workshop", resource:"Financial Fitness Workshop", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/all_workshops/financial-fitness-workshop"},
+  {phase:"Grow", theme:"Workshop", resource:"Interview Preparation Workshop", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/all_workshops/interview-preparation-workshop"},
+  {phase:"Grow", theme:"Workshop", resource:"It's Not a Catastrophe Workshop", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/all_workshops/its-not-a-catastophe-workshops"},
+  {phase:"Grow", theme:"Workshop", resource:"Making Friends with Anxiety", system:"General", role:"ESC / MS EDC", url:"https://central.coact.org.au/all_workshops/making-friends-with-anxiety"},
 
-  {phase:"Prepare", theme:"Appointment Management", resource:"Appointment Task Card - DRS", system:"General", role:"DRS"},
-  {phase:"Prepare", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Employer Engagement", resource:"Adding and Managing an Employer Profile in JobReady", system:"JobReady", role:"DRS / MS EDC"},
-  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Engagement – Educating Employers on Disability", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Pack", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Employment Tools", resource:"IEA Employment Placement Tools", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"Cover Letter Workshop", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Upload a Resume", system:"JobReady", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"How Clients Upload a Resume to Workforce Australia", system:"WAOP", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Creating a Cover Letter in Campus", system:"Campus", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Job Match Attributes", system:"JobReady", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Using Job Match Attributes in JobReady", system:"JobReady", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Marketing Vacancies", system:"General", role:"DRS / MS EDC"},
-  {phase:"Prepare", theme:"Job Readiness", resource:"Job Ready – Shortlisting a Vacancy", system:"JobReady", role:"DRS / MS EDC"},
-  {phase:"Prepare", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"Resume Writing Workshop", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"Industry Specific Workshops", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"Job Club Workshops", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"My Labour Market Workshop", system:"General", role:"ESC / DRS / MS EDC"},
-  {phase:"Prepare", theme:"Workshop", resource:"DEI Workshop", system:"General", role:"ESC / DRS / MS EDC"},
+  {phase:"Prepare", theme:"Appointment Management", resource:"Appointment Task Card - DRS", system:"General", role:"DRS", url:"https://central.coact.org.au/documents-iea/appointment-task-cards-drs"},
+  {phase:"Prepare", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/checklist-for-ensuring-evidence-is-ready-for-submission-to-ccu"},
+  {phase:"Prepare", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/job-ready-upload-claims-evidence-and-submit-to-ccu"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Adding and Managing an Employer Profile in JobReady", system:"JobReady", role:"DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/adding-and-managing-an-employer-profile-in-job-ready"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Engagement – Educating Employers on Disability", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/employer-engagement-educating-employers-on-disability"},
+  {phase:"Prepare", theme:"Employer Engagement", resource:"Employer Pack", system:"General", role:"ESC / DRS / MS EDC", note:"Click 'Marketing Materials' in the menu, select your brand and then 'Employer Pack'."},
+  {phase:"Prepare", theme:"Employment Tools", resource:"IEA Employment Placement Tools", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/the-coact-way-guide"},
+  {phase:"Prepare", theme:"Workshop", resource:"Cover Letter Workshop", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/cover-letter-workshop"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Upload a Resume", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/upload-a-resume"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"How Clients Upload a Resume to Workforce Australia", system:"WAOP", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/how-clients-upload-a-resume-to-workforce-australia"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Creating a Cover Letter in Campus", system:"Campus", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/creating-a-cover-letter-in-campus"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Job Match Attributes", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/job-match-attributes"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Using Job Match Attributes in JobReady", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/using-job-match-attributes-in-jobready"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Marketing Vacancies", system:"General", role:"DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/marketing-vacancies"},
+  {phase:"Prepare", theme:"Job Readiness", resource:"Job Ready – Shortlisting a Vacancy", system:"JobReady", role:"DRS / MS EDC", url:"https://central.coact.org.au/documents-all/job-ready-shortlisting-a-vacancy"},
+  {phase:"Prepare", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/track-placement-progress"},
+  {phase:"Prepare", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/retention-support-pps-questions"},
+  {phase:"Prepare", theme:"Workshop", resource:"Resume Writing Workshop", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/resume-workshop"},
+  {phase:"Prepare", theme:"Workshop", resource:"Industry Specific Workshops", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/industry-specific-workshops"},
+  {phase:"Prepare", theme:"Workshop", resource:"Job Club Workshops", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/job-club-workshops"},
+  {phase:"Prepare", theme:"Workshop", resource:"My Labour Market Workshop", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/my-labour-market"},
+  {phase:"Prepare", theme:"Workshop", resource:"DEI Workshop", system:"General", role:"ESC / DRS / MS EDC", url:"https://coact.omniacloud.net/all_workshops/dei-workshop-drs-resources"},
 
-  {phase:"Support", theme:"Appointment Management", resource:"Appointment Task Card - WRC", system:"General", role:"WRC"},
-  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment", system:"Campus", role:"WRC"},
-  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment - Video", system:"Campus", role:"WRC"},
-  {phase:"Support", theme:"Assessment & Planning", resource:"Clinical Needs Assessment", system:"JobReady", role:"MS ESC"},
-  {phase:"Support", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families"},
-  {phase:"Support", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families"},
-  {phase:"Support", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Claims & Evidence", resource:"Submitting a Flexible Ongoing Support Claim to CCU", system:"JobReady", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Funding Support", resource:"Supports Available through Employment Assistance Fund (EAF)", system:"General", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families"},
-  {phase:"Support", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Support Management", resource:"Job Ready – Support Tracker and Support Schedule", system:"JobReady", role:"WRC / MS ESC"},
-  {phase:"Support", theme:"Support Management", resource:"Work Instruction – Job Ready Alerts Dashboard", system:"JobReady", role:"WRC / MS ESC"},
+  {phase:"Support", theme:"Appointment Management", resource:"Appointment Task Card - WRC", system:"General", role:"WRC", url:"https://central.coact.org.au/documents-iea/appointment-task-card-wrc"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment", system:"Campus", role:"WRC", url:"https://central.coact.org.au/documents-iea/work-compatibility-assessment"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Work Compatibility Assessment - Video", system:"Campus", role:"WRC", url:"https://central.coact.org.au/documents-iea/work-compatibility-assessment-video-only"},
+  {phase:"Support", theme:"Assessment & Planning", resource:"Clinical Needs Assessment", system:"JobReady", role:"MS ESC", url:"https://central.coact.org.au/documents-iea/ms-clinical-needs-assessment"},
+  {phase:"Support", theme:"Career Planning", resource:"Campus Career Action Plan", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/campus-career-action-plan"},
+  {phase:"Support", theme:"Career Planning", resource:"Managing the Career Action Plan in Campus - Video", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/managing-the-career-action-plan-in-campusmp4"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Checklist for Ensuring Evidence Is Ready for Submission to CCU", system:"General", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-iea/checklist-for-ensuring-evidence-is-ready-for-submission-to-ccu"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Job Ready - Upload claims evidence and submit to CCU", system:"JobReady", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-iea/job-ready-upload-claims-evidence-and-submit-to-ccu"},
+  {phase:"Support", theme:"Claims & Evidence", resource:"Submitting a Flexible Ongoing Support Claim to CCU", system:"JobReady", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-iea/submitting-a-flexible-ongoing-support-claim-to-ccu"},
+  {phase:"Support", theme:"Funding Support", resource:"Supports Available through Employment Assistance Fund (EAF)", system:"General", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-iea/supports-available-through-employment-assistance-fund-eaf"},
+  {phase:"Support", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-all/track-placement-progress"},
+  {phase:"Support", theme:"Progress Monitoring", resource:"Client Dashboard", system:"Campus", role:"All Role Families", url:"https://central.coact.org.au/documents-iea/client-dashboard"},
+  {phase:"Support", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"WRC / MS ESC", url:"https://central.coact.org.au/all-bestpracticeguides/retention-support-pps-questions"},
+  {phase:"Support", theme:"Support Management", resource:"Job Ready – Support Tracker and Support Schedule", system:"JobReady", role:"WRC / MS ESC", url:"https://central.coact.org.au/documents-all/job-ready-support-tracker-and-support-schedule"},
+  {phase:"Support", theme:"Support Management", resource:"Work Instructions – Job Ready Alerts Dashboard", system:"JobReady", role:"All Role Families", url:"https://central.coact.org.au/documents-all/work-instructions-job-ready-alerts-dashboard"},
 ];
 
 const QUICKFIND = [
-  {label:"Register or onboard a client", phase:"Connect"},
-  {label:"Complete intake or initial appointment prep", phase:"Connect"},
-  {label:"Assess needs, build a plan or manage barriers", phase:"Grow"},
-  {label:"Create or review the Career Action Plan", phase:"Grow"},
-  {label:"Prepare applications, match jobs or engage employers", phase:"Prepare"},
-  {label:"Progress placement evidence or claims", phase:"Prepare"},
-  {label:"Manage in-work and ongoing support", phase:"Support"},
-  {label:"Manage EAF, refunds or phase changes", phase:"Support"},
+  {label:"Register or onboard a client", phase:"Connect", phases:["Connect"], themes:["Eligibility & Registration","Client Records","Welcome & Activation"]},
+  {label:"Complete intake or initial appointment prep", phase:"Connect", phases:["Connect"], themes:["Intake & Onboarding","Commencement Preparation","Initial Appointment","Appointment Management"]},
+  {label:"Assess needs, build a plan or manage barriers", phase:"Grow", themes:["Assessment & Planning","Activity & Intervention Management"]},
+  {label:"Create or review the Career Action Plan", phase:"Grow", themes:["Career Planning"]},
+  {label:"Prepare applications, match jobs or engage employers", phase:"Prepare", phases:["Prepare"], themes:["Job Readiness","Employer Engagement","Employment Tools"]},
+  {label:"Progress placement evidence or claims", phase:"Prepare", themes:["Claims & Evidence","Placement Management"]},
+  {label:"Manage in-work and ongoing support", phase:"Support", themes:["Support Management","Progress Monitoring"]},
+  {label:"Access Employment Assistance Fund (EAF) support", phase:"Support", themes:["Funding Support"]},
 ];
 
-const state = {phase:null, system:"All", role:"All", query:""};
+const state = {phase:null, quick:null, system:"All", role:"All", query:""};
 
 function splitTokens(str){ return str.split('/').map(s=>s.trim()); }
 function uniqueSorted(list){ return Array.from(new Set(list)).sort(); }
-function hasSelection(){ return state.phase !== null || state.query.trim() !== ""; }
+function hasSelection(){ return state.phase !== null || state.quick !== null || state.query.trim() !== ""; }
+
+function inQuick(row, q){
+  if(q.phases && !q.phases.includes(row.phase)) return false;
+  return q.themes.includes(row.theme);
+}
+
+// Resources that appear in several phases are shown once, with every phase badge and role combined.
+function mergeByResource(rows){
+  const byName = new Map();
+  rows.forEach(r=>{
+    const m = byName.get(r.resource);
+    if(!m){ byName.set(r.resource, {...r, phases:[r.phase], roleTokens:splitTokens(r.role)}); return; }
+    if(!m.phases.includes(r.phase)) m.phases.push(r.phase);
+    splitTokens(r.role).forEach(t=>{ if(!m.roleTokens.includes(t)) m.roleTokens.push(t); });
+  });
+  return Array.from(byName.values()).map(m=>({...m, role:m.roleTokens.join(' / ')}));
+}
+
+function pool(){
+  if(state.quick !== null) return mergeByResource(DATA.filter(r=>inQuick(r, QUICKFIND[state.quick])));
+  return DATA.map(r=>({...r, phases:[r.phase]}));
+}
 
 function buildQuickFind(){
   const el = document.getElementById('quickfind');
@@ -371,8 +407,8 @@ function buildQuickFind(){
   ).join('');
   el.querySelectorAll('.quick-chip').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const q = QUICKFIND[btn.dataset.idx];
-      state.phase = q.phase;
+      state.quick = Number(btn.dataset.idx);
+      state.phase = null;
       state.system = "All";
       state.role = "All";
       state.query = "";
@@ -392,6 +428,7 @@ function renderPhaseRow(){
   el.querySelectorAll('.phase-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.phase = (state.phase === btn.dataset.phase) ? null : btn.dataset.phase;
+      state.quick = null;
       renderPhaseRow();
       renderOutput();
     });
@@ -399,37 +436,17 @@ function renderPhaseRow(){
 }
 
 function matches(row){
-  if(state.phase !== null && row.phase !== state.phase) return false;
+  if(state.phase !== null && !row.phases.includes(state.phase)) return false;
   if(state.system !== "All" && !splitTokens(row.system).includes(state.system)) return false;
   if(state.role !== "All"){
     const roles = splitTokens(row.role);
     if(!roles.includes(state.role) && row.role !== "All Role Families") return false;
   }
   if(state.query){
-    const hay = (row.theme+' '+row.resource+' '+row.system+' '+row.role+' '+row.phase).toLowerCase();
+    const hay = (row.theme+' '+row.resource+' '+row.system+' '+row.role+' '+row.phases.join(' ')).toLowerCase();
     if(!hay.includes(state.query.toLowerCase())) return false;
   }
   return true;
-}
-
-async function copyText(text, btn){
-  let ok = false;
-  try{ await navigator.clipboard.writeText(text); ok = true; }
-  catch(e){
-    try{
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
-      document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
-      ok = true;
-    }catch(e2){ ok = false; }
-  }
-  if(ok){
-    const original = btn.textContent;
-    btn.textContent = 'Copied';
-    btn.dataset.copied = "true";
-    setTimeout(()=>{ btn.textContent = original; btn.dataset.copied = "false"; }, 1200);
-  }
 }
 
 function renderOutput(){
@@ -455,9 +472,11 @@ function renderOutput(){
     return;
   }
 
-  const systems = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.system)));
-  const roles = uniqueSorted(DATA.filter(r=>state.phase===null || r.phase===state.phase).flatMap(r=>splitTokens(r.role)));
-  const filtered = DATA.filter(matches);
+  const rows = pool();
+  const scope = rows.filter(r=>state.phase===null || r.phases.includes(state.phase));
+  const systems = uniqueSorted(scope.flatMap(r=>splitTokens(r.system)));
+  const roles = uniqueSorted(scope.flatMap(r=>splitTokens(r.role)));
+  const filtered = rows.filter(matches);
 
   area.innerHTML = `
     <div class="refine-row">
@@ -473,21 +492,23 @@ function renderOutput(){
       </div>
       <button class="startover" id="startOver">Start over</button>
     </div>
+    ${state.quick!==null ? `<div class="task-row">Showing resources for: <strong>${QUICKFIND[state.quick].label}</strong></div>` : ''}
     <div class="count-row">${filtered.length} resource${filtered.length===1?'':'s'} found</div>
     <div class="results">
       ${filtered.length===0 ? `<div class="prompt-card">No matches. Try clearing a filter or the search box.</div>` :
         filtered.map(r=>`
           <div class="row">
             <div class="row-main">
-              <span class="badge" data-phase="${r.phase}">${r.phase.toUpperCase()}</span><br>
+              ${r.phases.map(p=>`<span class="badge" data-phase="${p}">${p.toUpperCase()}</span>`).join(' ')}<br>
               <span class="theme-label">${r.theme}</span>
-              <span class="resource-tag">${r.resource}</span>
+              ${r.url ? `<a class="resource-tag resource-link" href="${r.url}" target="_blank" rel="noopener">${r.resource}</a>` : `<span class="resource-tag">${r.resource}</span>`}
+              ${r.note ? `<div class="note"><strong>How to find it:</strong> ${r.note}</div>` : ''}
               <div class="meta-tags">
                 <span class="meta-tag"><strong>SYSTEM:</strong> ${r.system}</span>
                 <span class="meta-tag"><strong>PRIMARY ROLE:</strong> ${r.role}</span>
               </div>
             </div>
-            <button class="copy-btn" data-resource="${r.resource.replace(/"/g,'&quot;')}">Copy</button>
+            ${r.url ? `<div class="row-actions"><a class="open-btn" href="${r.url}" target="_blank" rel="noopener">Open resource<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>` : ''}
           </div>
         `).join('')
       }
@@ -497,13 +518,10 @@ function renderOutput(){
   document.getElementById('systemFilter').addEventListener('change', e=>{ state.system = e.target.value; renderOutput(); });
   document.getElementById('roleFilter').addEventListener('change', e=>{ state.role = e.target.value; renderOutput(); });
   document.getElementById('startOver').addEventListener('click', ()=>{
-    state.phase = null; state.system = "All"; state.role = "All"; state.query = "";
+    state.phase = null; state.quick = null; state.system = "All"; state.role = "All"; state.query = "";
     document.getElementById('search').value = "";
     renderPhaseRow();
     renderOutput();
-  });
-  area.querySelectorAll('.copy-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> copyText(btn.dataset.resource, btn));
   });
 }
 
