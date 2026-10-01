@@ -392,7 +392,16 @@ const QUICKFIND = [
   {label:"Access Employment Assistance Fund (EAF) support", phase:"Support", themes:["Funding Support"]},
 ];
 
-const ROLES = ["CCA","MS ESO","ESC","MS EDC","DRS","WRC","MS ESC"];
+const ROLE_TITLES = {
+  "CCA":"Client Care Assistant",
+  "MS ESO":"Multiple Sclerosis Employment Support Officer",
+  "ESC":"Employment Support Consultant (generalist model)",
+  "MS EDC":"Multiple Sclerosis Employment Development Consultant",
+  "DRS":"Diversity Recruitment Specialist",
+  "WRC":"Workforce Retention Consultant",
+  "MS ESC":"Multiple Sclerosis Employment Support Consultant",
+};
+const ROLES = Object.keys(ROLE_TITLES);
 const ROLE_KEY = 'iea-finder-role';
 
 function loadRole(){
@@ -413,7 +422,9 @@ function hasSelection(){ return state.phase !== null || state.quick !== null || 
 function renderRoleRow(){
   const el = document.getElementById('roleRow');
   el.innerHTML = ["All", ...ROLES].map(r=>
-    `<button class="role-pill" data-role="${r}" data-active="${state.role===r}">${r==="All" ? "All roles" : r}</button>`
+    r==="All"
+      ? `<button class="role-pill" data-role="All" data-active="${state.role==="All"}">All roles</button>`
+      : `<button class="role-pill" data-role="${r}" data-active="${state.role===r}" title="${ROLE_TITLES[r]}" aria-label="${r}: ${ROLE_TITLES[r]}">${r}</button>`
   ).join('');
   el.querySelectorAll('.role-pill').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -534,7 +545,7 @@ function renderOutput(){
       </div>
       <button class="startover" id="startOver">Start over</button>
     </div>
-    ${(state.quick!==null || state.role!=="All") ? `<div class="task-row">Showing resources${state.quick!==null ? ` for: <strong>${QUICKFIND[state.quick].label}</strong>` : ''}${state.role!=="All" ? ` · Role: <strong>${state.role}</strong>` : ''}</div>` : ''}
+    ${(state.quick!==null || state.role!=="All") ? `<div class="task-row">Showing resources${state.quick!==null ? ` for: <strong>${QUICKFIND[state.quick].label}</strong>` : ''}${state.role!=="All" ? ` · Role: <strong>${state.role}</strong> (${ROLE_TITLES[state.role]})` : ''}</div>` : ''}
     <div class="count-row">${filtered.length} resource${filtered.length===1?'':'s'} found</div>
     <div class="results">
       ${filtered.length===0 ? `<div class="prompt-card">${state.role!=="All" ? `No resources for <strong>${state.role}</strong> here. Try <strong>All roles</strong>, or clear a filter or the search box.` : `No matches. Try clearing a filter or the search box.`}</div>` :
