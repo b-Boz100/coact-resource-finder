@@ -354,6 +354,7 @@ const DATA = [
   {phase:"Prepare", theme:"Job Readiness", resource:"Marketing Vacancies", system:"General", role:"DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/marketing-vacancies"},
   {phase:"Prepare", theme:"Job Readiness", resource:"Job Ready – Shortlisting a Vacancy", system:"JobReady", role:"DRS / MS EDC", url:"https://central.coact.org.au/documents-all/job-ready-shortlisting-a-vacancy"},
   {phase:"Prepare", theme:"Placement Management", resource:"Track Placement Progress", system:"JobReady", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-all/track-placement-progress"},
+  {phase:"Prepare", theme:"Placement Management", resource:"When to Anchor a Placement vs When Not To", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/documents-iea/when-to-anchor-a-placement-vs-when-not-to"},
   {phase:"Prepare", theme:"Support Management", resource:"Retention Support – Post Placement Support (PPS) Conversation Guide", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all-bestpracticeguides/retention-support-pps-questions"},
   {phase:"Prepare", theme:"Workshop", resource:"Resume Writing Workshop", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/resume-workshop"},
   {phase:"Prepare", theme:"Workshop", resource:"Industry Specific Workshops", system:"General", role:"ESC / DRS / MS EDC", url:"https://central.coact.org.au/all_workshops/industry-specific-workshops"},
@@ -567,9 +568,11 @@ function renderOutput(){
 
   document.getElementById('systemFilter').addEventListener('change', e=>{ state.system = e.target.value; renderOutput(); });
   document.getElementById('startOver').addEventListener('click', ()=>{
-    state.phase = null; state.quick = null; state.system = "All"; state.query = "";
+    state.phase = null; state.quick = null; state.system = "All"; state.role = "All"; state.query = "";
+    saveRole("All");
     document.getElementById('search').value = "";
     renderPhaseRow();
+    renderRoleRow();
     renderOutput();
   });
 }
